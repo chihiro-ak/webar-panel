@@ -2,64 +2,52 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>WebAR Panel MVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
     html,
     body {
       margin: 0;
-      width: 100%;
-      height: 100%;
       overflow: hidden;
       background: black;
-    }
-
-    #fallback-note {
-      position: fixed;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      max-width: min(92vw, 520px);
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: rgba(255, 237, 199, 0.96);
-      color: #553800;
-      font: 13px/1.5 "Hiragino Sans", "Yu Gothic", sans-serif;
-      display: none;
-    }
-
-    #fallback-note.is-visible {
-      display: block;
+      width: 100%;
+      height: 100%;
     }
   </style>
-
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
 <body>
-  <div id="fallback-note"></div>
 
-  <a-scene
-    id="ar-scene"
-    mindar-image="imageTargetSrc: ./public/assets/targets/compiled/targets.mind; smoothing: true; filterMinCF: 0.0001; filterBeta: 0.001"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    renderer="alpha: true; preserveDrawingBuffer: true"
-  >
-    <a-assets timeout="10000">
-      <img id="character-image" alt="Character" crossorigin="anonymous" />
-    </a-assets>
+<a-scene
+  mindar-image="imageTargetSrc: ./public/assets/targets/compiled/targets.mind; smoothing: true; filterMinCF:0.0001; filterBeta: 0.001"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  renderer="alpha: true; preserveDrawingBuffer: true"
+>
+  <a-assets>
+    <img
+      id="character-image"
+      crossorigin="anonymous"
+      src="./public/assets/char/processed/Todoroki-Hajime_pr-img_02.trimmed.png"
+    />
+  </a-assets>
 
-    <a-entity light="type: ambient; intensity: 1"></a-entity>
+  <a-entity light="type: ambient; intensity: 1"></a-entity>
 
-    <a-entity id="image-target-anchor" mindar-image-target="targetIndex: 0">
-    </a-entity>
+  <a-entity id="target0" mindar-image-target="targetIndex: 0">
+    <a-plane
+      id="character-plane"
+      material="shader: flat; src: #character-image; transparent: true; side: double; alphaTest: 0.01"
+      width="0.605"
+      height="1.55"
+      position="0.42 0.795 0.08"
+      animation__float="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true; to: 0.42 0.815 0.08"
+      animation__sway="property: rotation; dir: alternate; dur: 2800; easing: easeInOutSine; loop: true; to: 0 0 2"
+    ></a-plane>
+  </a-entity>
 
-    <a-camera active="true" position="0 0 0"></a-camera>
-  </a-scene>
+  <a-camera active="true" position="0 0 0"></a-camera>
+</a-scene>
 
-  <script type="module" src="./src/app.js"></script>
 </body>
 </html>
