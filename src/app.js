@@ -7,9 +7,9 @@ import { loadImageSize } from "./utils/load-image-size.js";
 const statusUi = createStatusUi();
 const scene = document.getElementById("ar-scene");
 const assetImage = document.getElementById("character-image");
+const imageTarget = document.getElementById("image-target-anchor");
 
 registerIdleMotionComponent();
-statusUi.showInitial(AR_CONFIG.ui.initialMessage);
 
 setupScene().catch((error) => {
   console.error(error);
@@ -19,74 +19,28 @@ setupScene().catch((error) => {
 });
 
 async function setupScene() {
-  const imageTarget = document.createElement("a-entity");
-  imageTarget.setAttribute(
-    "mindar-image-target",
-    `targetIndex: ${AR_CONFIG.tracking.targetIndex}`
-  );
-  imageTarget.setAttribute("id", "image-target-anchor");
-  scene.appendChild(imageTarget);
-
   assetImage.setAttribute("src", AR_CONFIG.assets.characterProcessedSrc);
-
-  const sceneTrackingConfig = [
-    `imageTargetSrc: ${AR_CONFIG.assets.targetMindSrc}`,
-    `smoothing: ${AR_CONFIG.tracking.smoothing}`,
-    `filterMinCF: ${AR_CONFIG.tracking.filterMinCF}`,
-    `filterBeta: ${AR_CONFIG.tracking.filterBeta}`,
-    `warmupTolerance: ${AR_CONFIG.tracking.warmupTolerance}`,
-    `missTolerance: ${AR_CONFIG.tracking.missTolerance}`,
-    "uiScanning: no",
-    "uiLoading: no",
-    "uiError: no",
-    "maxTrack: 1"
-  ].join("; ");
-
-  scene.setAttribute("mindar-image", sceneTrackingConfig);
 
   const processedImage = await loadImageSize(AR_CONFIG.assets.characterProcessedSrc);
 
-  let characterEntity = null;
-  let hasSpawned = false;
-  let hideUiTimerId = null;
+  const characterEntity = createCharacterEntity({
+    assetId: "character-image",
+    imageWidth: processedImage.width,
+    imageHeight: processedImage.height,
+    visibleHeightMeters: AR_CONFIG.character.visibleHeightMeters,
+    offset: AR_CONFIG.character.offset,
+    idle: AR_CONFIG.character.idle
+  });
+
+  characterEntity.object3D.visible = false;
+  imageTarget.appendChild(characterEntity);
 
   imageTarget.addEventListener("targetFound", () => {
-    if (!hasSpawned) {
-      characterEntity = createCharacterEntity({
-        assetId: "character-image",
-        imageWidth: processedImage.width,
-        imageHeight: processedImage.height,
-        visibleHeightMeters: AR_CONFIG.character.visibleHeightMeters,
-        offset: AR_CONFIG.character.offset,
-        idle: AR_CONFIG.character.idle
-      });
-      imageTarget.appendChild(characterEntity);
-      hasSpawned = true;
-    }
-
-    if (characterEntity) {
-      characterEntity.object3D.visible = true;
-    }
-
-    statusUi.showDetected(AR_CONFIG.ui.detectedMessage);
-
-    window.clearTimeout(hideUiTimerId);
-    hideUiTimerId = window.setTimeout(() => {
-      statusUi.hide();
-    }, 1800);
+    characterEntity.object3D.visible = true;
   });
 
   imageTarget.addEventListener("targetLost", () => {
-    if (characterEntity) {
-      characterEntity.object3D.visible = false;
-    }
-
-    window.clearTimeout(hideUiTimerId);
-    statusUi.showLost(AR_CONFIG.ui.lostMessage);
-  });
-
-  scene.addEventListener("arReady", () => {
-    statusUi.showInitial(AR_CONFIG.ui.initialMessage);
+    characterEntity.object3D.visible = false;
   });
 
   scene.addEventListener("arError", () => {
