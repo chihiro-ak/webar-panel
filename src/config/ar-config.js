@@ -10,9 +10,9 @@ export const AR_CONFIG = {
   character: {
     visibleHeightMeters: 1.55,
     offset: {
-      x: 0.5,
+      x: 0.42,
       y: 0.02,
-      z: 0.28
+      z: 0.08
     },
     idle: {
       floatAmplitude: 0.02,
@@ -23,6 +23,7 @@ export const AR_CONFIG = {
   },
   tracking: {
     targetIndex: 0,
+    smoothing: true,
     filterMinCF: 0.0001,
     filterBeta: 0.001,
     warmupTolerance: 8,

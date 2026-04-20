@@ -14,7 +14,6 @@
         --ui-bg: rgba(12, 18, 36, 0.78);
         --ui-border: rgba(255, 255, 255, 0.18);
         --ui-text: #f8f8fb;
-        --ui-accent: #96d8ff;
       }
 
       html,
@@ -106,31 +105,28 @@
       <div id="fallback-note"></div>
       <div id="status-ui" aria-live="polite">
         <p id="status-title">卓上POPにカメラを向けてください</p>
-        <p id="status-copy">POPを画角に入れている間、キャラが自動で安定表示されます。</p>
+        <p id="status-copy">
+          POPを画角に入れている間、キャラが自動で安定表示されます。
+        </p>
       </div>
       <a-scene
         id="ar-scene"
         color-space="sRGB"
         embedded
         loading-screen="enabled: false;"
-        renderer="colorManagement: true; physicallyCorrectLights: false;"
+        renderer="alpha: true; colorManagement: true; physicallyCorrectLights: false; preserveDrawingBuffer: true"
         device-orientation-permission-ui="enabled: false"
         vr-mode-ui="enabled: false"
       >
         <a-assets timeout="10000">
-          <img
-            id="character-image"
-            alt="Character"
-            crossorigin="anonymous"
-          />
+          <img id="character-image" alt="Character" crossorigin="anonymous" />
         </a-assets>
 
-        <a-entity id="camera-root">
-          <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-        </a-entity>
+        <a-entity light="type: ambient; intensity: 1"></a-entity>
+        <a-camera active="true" position="0 0 0"></a-camera>
       </a-scene>
     </div>
 
     <script type="module" src="./src/app.js"></script>
   </body>
-  </html>
+</html>

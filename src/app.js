@@ -31,6 +31,7 @@ async function setupScene() {
 
   const sceneTrackingConfig = [
     `imageTargetSrc: ${AR_CONFIG.assets.targetMindSrc}`,
+    `smoothing: ${AR_CONFIG.tracking.smoothing}`,
     `filterMinCF: ${AR_CONFIG.tracking.filterMinCF}`,
     `filterBeta: ${AR_CONFIG.tracking.filterBeta}`,
     `warmupTolerance: ${AR_CONFIG.tracking.warmupTolerance}`,
