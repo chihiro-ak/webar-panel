@@ -81,8 +81,9 @@ GitHub Pages は HTTPS 配信になるため、スマホ実機確認に向いて
 - trim済み画像: `public/assets/char/processed/Todoroki-Hajime_pr-img_02.trimmed.png`
 - target source image: `public/assets/targets/source/target.png`
 - MindAR compiled target: `public/assets/targets/compiled/targets.mind`
+- GitHub Pages runtime copies: `targets.mind`, `character.png`
 
-この構成では、既存の `targets.mind` は `target.png` から生成済みである前提です。
+この構成では、既存の `targets.mind` は `target.png` から生成済みである前提です。GitHub Pages の配信安定性を優先して、実行時はルート直下の `targets.mind` と `character.png` も参照しています。
 
 ## キャラ差し替え方法
 
