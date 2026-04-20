@@ -1,0 +1,14 @@
+{
+  "name": "webar-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MindAR + A-Frame WebAR MVP for event panel character spawn",
+  "scripts": {
+    "prepare:assets": "node scripts/prepare-assets.js",
+    "start": "node scripts/serve.js",
+    "start:host": "node scripts/serve.js --host 0.0.0.0 --port 8080"
+  },
+  "dependencies": {
+    "sharp": "^0.34.2"
+  }
+}

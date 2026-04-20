@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>WebAR Panel MVP</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ui-bg: rgba(12, 18, 36, 0.78);
+        --ui-border: rgba(255, 255, 255, 0.18);
+        --ui-text: #f8f8fb;
+        --ui-accent: #96d8ff;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #05070d;
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      }
+
+      #app-shell {
+        position: fixed;
+        inset: 0;
+      }
+
+      #status-ui {
+        position: fixed;
+        left: 50%;
+        bottom: max(24px, env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: min(88vw, 420px);
+        padding: 14px 18px;
+        border: 1px solid var(--ui-border);
+        border-radius: 18px;
+        background: var(--ui-bg);
+        color: var(--ui-text);
+        text-align: center;
+        backdrop-filter: blur(18px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+        transition:
+          opacity 200ms ease,
+          transform 200ms ease,
+          scale 200ms ease;
+        z-index: 20;
+      }
+
+      #status-ui.is-compact {
+        opacity: 0.4;
+        scale: 0.92;
+      }
+
+      #status-ui.is-hidden {
+        opacity: 0;
+        transform: translate(-50%, 12px);
+        pointer-events: none;
+      }
+
+      #status-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      #status-copy {
+        margin: 6px 0 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: rgba(248, 248, 251, 0.84);
+      }
+
+      #fallback-note {
+        position: fixed;
+        top: max(16px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 520px);
+        padding: 10px 14px;
+        border-radius: 14px;
+        background: rgba(255, 237, 199, 0.94);
+        color: #553800;
+        font-size: 13px;
+        line-height: 1.5;
+        z-index: 25;
+        display: none;
+      }
+
+      #fallback-note.is-visible {
+        display: block;
+      }
+    </style>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <body>
+    <div id="app-shell">
+      <div id="fallback-note"></div>
+      <div id="status-ui" aria-live="polite">
+        <p id="status-title">卓上POPにカメラを向けてください</p>
+        <p id="status-copy">POPを画角に入れている間、キャラが自動で安定表示されます。</p>
+      </div>
+      <a-scene
+        id="ar-scene"
+        color-space="sRGB"
+        embedded
+        loading-screen="enabled: false;"
+        renderer="colorManagement: true; physicallyCorrectLights: false;"
+        device-orientation-permission-ui="enabled: false"
+        vr-mode-ui="enabled: false"
+      >
+        <a-assets timeout="10000">
+          <img
+            id="character-image"
+            alt="Character"
+            crossorigin="anonymous"
+          />
+        </a-assets>
+
+        <a-entity id="camera-root">
+          <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        </a-entity>
+      </a-scene>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+  </html>
