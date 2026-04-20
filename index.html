@@ -19,20 +19,62 @@
   <a-entity light="type: ambient; intensity: 1"></a-entity>
 
   <a-entity id="target0" mindar-image-target="targetIndex: 0">
-    <a-plane
-      id="character-plane"
-      src="character.png"
-      width="1"
-      height="1"
-      position="0 0 0"
-      material="shader: flat; transparent: true"
-    ></a-plane>
+    <a-entity id="character-billboard">
+      <a-plane
+        id="character-plane"
+        src="character.png"
+        width="1"
+        height="1"
+        position="0 0 0"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+    </a-entity>
   </a-entity>
 
   <a-camera active="true" position="0 0 0" look-controls="enabled: false"></a-camera>
 </a-scene>
 
 <script>
+  AFRAME.registerComponent("camera-facing", {
+    init() {
+      this.parentQuaternion = new THREE.Quaternion();
+      this.inverseParentQuaternion = new THREE.Quaternion();
+      this.desiredWorldQuaternion = new THREE.Quaternion();
+      this.wrapperWorldPosition = new THREE.Vector3();
+      this.cameraWorldPosition = new THREE.Vector3();
+      this.lookAtMatrix = new THREE.Matrix4();
+      this.up = new THREE.Vector3(0, 1, 0);
+      this.camera = null;
+    },
+
+    tick() {
+      const parentObject = this.el.parentEl?.object3D;
+      const cameraObject = this.camera || this.el.sceneEl.camera;
+
+      if (!parentObject || !cameraObject) {
+        return;
+      }
+
+      this.camera = cameraObject;
+
+      parentObject.getWorldQuaternion(this.parentQuaternion);
+      this.inverseParentQuaternion.copy(this.parentQuaternion).invert();
+
+      this.el.object3D.getWorldPosition(this.wrapperWorldPosition);
+      cameraObject.getWorldPosition(this.cameraWorldPosition);
+
+      this.lookAtMatrix.lookAt(
+        this.wrapperWorldPosition,
+        this.cameraWorldPosition,
+        this.up
+      );
+      this.desiredWorldQuaternion.setFromRotationMatrix(this.lookAtMatrix);
+
+      this.el.object3D.quaternion.copy(this.inverseParentQuaternion);
+      this.el.object3D.quaternion.multiply(this.desiredWorldQuaternion);
+    }
+  });
+
   const TARGET_IMAGE_WIDTH_PX = 1451;
   const TARGET_IMAGE_HEIGHT_PX = 2048;
   const TARGET_PHYSICAL_HEIGHT_M = 0.297;
@@ -63,15 +105,18 @@
   const positionYUnits =
     (characterCenterFromFloorM - targetCenterFromFloorM) * anchorUnitsPerMeter;
   const positionZUnits = CHARACTER_FORWARD_M * anchorUnitsPerMeter;
-  const floatToYUnits = positionYUnits + (IDLE_FLOAT_M * anchorUnitsPerMeter);
 
+  const characterBillboard = document.getElementById("character-billboard");
   const characterPlane = document.getElementById("character-plane");
-  characterPlane.setAttribute("width", characterWidthUnits.toFixed(3));
-  characterPlane.setAttribute("height", characterHeightUnits.toFixed(3));
-  characterPlane.setAttribute(
+
+  characterBillboard.setAttribute(
     "position",
     `${positionXUnits.toFixed(3)} ${positionYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
   );
+  characterBillboard.setAttribute("camera-facing", "");
+
+  characterPlane.setAttribute("width", characterWidthUnits.toFixed(3));
+  characterPlane.setAttribute("height", characterHeightUnits.toFixed(3));
   characterPlane.setAttribute(
     "animation__float",
     [
@@ -80,7 +125,7 @@
       "dur: 2200",
       "easing: easeInOutSine",
       "loop: true",
-      `to: ${positionXUnits.toFixed(3)} ${floatToYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
+      `to: 0 ${(IDLE_FLOAT_M * anchorUnitsPerMeter).toFixed(3)} 0`
     ].join("; ")
   );
   characterPlane.setAttribute(

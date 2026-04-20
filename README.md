@@ -151,3 +151,5 @@ MindAR の公式 image target compiler を使って、source image から `.mind
 - 複数 character / 複数 target 対応に拡張する
 - 軽い影表現や接地補助で見た目を改善する
 - target 検出安定化のパラメータ比較を実機別に記録する
+Update 2026-04-20:
+- The panel keeps following the detected marker position, but its facing is corrected toward the camera to reduce wobble caused by marker angle changes at longer distance.
