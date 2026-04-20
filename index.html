@@ -41,7 +41,7 @@
   const CHARACTER_VISIBLE_HEIGHT_M = 1.55;
   const CHARACTER_IMAGE_WIDTH_PX = 402;
   const CHARACTER_IMAGE_HEIGHT_PX = 1030;
-  const CHARACTER_RIGHT_GAP_M = 0.08;
+  const CHARACTER_RIGHT_GAP_M = 0.0;
   const CHARACTER_FORWARD_M = 0.12;
   const IDLE_FLOAT_M = 0.01;
   const IDLE_SWAY_DEG = 1.2;
@@ -59,10 +59,7 @@
   const targetCenterFromFloorM = DESK_HEIGHT_M + TARGET_PHYSICAL_HEIGHT_M / 2;
   const characterCenterFromFloorM = CHARACTER_VISIBLE_HEIGHT_M / 2;
 
-  const positionXUnits =
-    0.5 +
-    (CHARACTER_RIGHT_GAP_M * anchorUnitsPerMeter) +
-    (characterWidthUnits / 2);
+  const positionXUnits = CHARACTER_RIGHT_GAP_M * anchorUnitsPerMeter;
   const positionYUnits =
     (characterCenterFromFloorM - targetCenterFromFloorM) * anchorUnitsPerMeter;
   const positionZUnits = CHARACTER_FORWARD_M * anchorUnitsPerMeter;
