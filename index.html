@@ -22,31 +22,82 @@
     <a-plane
       id="character-plane"
       src="character.png"
-      width="0.605"
-      height="1.55"
-      position="0.68 -0.93 0.12"
+      width="1"
+      height="1"
+      position="0 0 0"
       material="shader: flat; transparent: true"
-      animation__float="
-        property: position;
-        dir: alternate;
-        dur: 2200;
-        easing: easeInOutSine;
-        loop: true;
-        to: 0.68 -0.91 0.12
-      "
-      animation__sway="
-        property: rotation;
-        dir: alternate;
-        dur: 3200;
-        easing: easeInOutSine;
-        loop: true;
-        to: 0 0 1.2
-      "
     ></a-plane>
   </a-entity>
 
-  <a-camera active="true" position="0 0 0"></a-camera>
+  <a-camera active="true" position="0 0 0" look-controls="enabled: false"></a-camera>
 </a-scene>
+
+<script>
+  const TARGET_IMAGE_WIDTH_PX = 1451;
+  const TARGET_IMAGE_HEIGHT_PX = 2048;
+  const TARGET_PHYSICAL_HEIGHT_M = 0.297;
+  const DESK_HEIGHT_M = 1.0;
+
+  const CHARACTER_VISIBLE_HEIGHT_M = 1.55;
+  const CHARACTER_IMAGE_WIDTH_PX = 402;
+  const CHARACTER_IMAGE_HEIGHT_PX = 1030;
+  const CHARACTER_RIGHT_GAP_M = 0.08;
+  const CHARACTER_FORWARD_M = 0.12;
+  const IDLE_FLOAT_M = 0.01;
+  const IDLE_SWAY_DEG = 1.2;
+
+  const targetPhysicalWidthM =
+    TARGET_PHYSICAL_HEIGHT_M * (TARGET_IMAGE_WIDTH_PX / TARGET_IMAGE_HEIGHT_PX);
+  const anchorUnitsPerMeter = 1 / targetPhysicalWidthM;
+
+  const characterPhysicalWidthM =
+    CHARACTER_VISIBLE_HEIGHT_M * (CHARACTER_IMAGE_WIDTH_PX / CHARACTER_IMAGE_HEIGHT_PX);
+
+  const characterWidthUnits = characterPhysicalWidthM * anchorUnitsPerMeter;
+  const characterHeightUnits = CHARACTER_VISIBLE_HEIGHT_M * anchorUnitsPerMeter;
+
+  const targetCenterFromFloorM = DESK_HEIGHT_M + TARGET_PHYSICAL_HEIGHT_M / 2;
+  const characterCenterFromFloorM = CHARACTER_VISIBLE_HEIGHT_M / 2;
+
+  const positionXUnits =
+    0.5 +
+    (CHARACTER_RIGHT_GAP_M * anchorUnitsPerMeter) +
+    (characterWidthUnits / 2);
+  const positionYUnits =
+    (characterCenterFromFloorM - targetCenterFromFloorM) * anchorUnitsPerMeter;
+  const positionZUnits = CHARACTER_FORWARD_M * anchorUnitsPerMeter;
+  const floatToYUnits = positionYUnits + (IDLE_FLOAT_M * anchorUnitsPerMeter);
+
+  const characterPlane = document.getElementById("character-plane");
+  characterPlane.setAttribute("width", characterWidthUnits.toFixed(3));
+  characterPlane.setAttribute("height", characterHeightUnits.toFixed(3));
+  characterPlane.setAttribute(
+    "position",
+    `${positionXUnits.toFixed(3)} ${positionYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
+  );
+  characterPlane.setAttribute(
+    "animation__float",
+    [
+      "property: position",
+      "dir: alternate",
+      "dur: 2200",
+      "easing: easeInOutSine",
+      "loop: true",
+      `to: ${positionXUnits.toFixed(3)} ${floatToYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
+    ].join("; ")
+  );
+  characterPlane.setAttribute(
+    "animation__sway",
+    [
+      "property: rotation",
+      "dir: alternate",
+      "dur: 3200",
+      "easing: easeInOutSine",
+      "loop: true",
+      `to: 0 0 ${IDLE_SWAY_DEG}`
+    ].join("; ")
+  );
+</script>
 
 </body>
 </html>
