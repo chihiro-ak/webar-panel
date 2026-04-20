@@ -40,11 +40,15 @@
       this.parentQuaternion = new THREE.Quaternion();
       this.inverseParentQuaternion = new THREE.Quaternion();
       this.desiredWorldQuaternion = new THREE.Quaternion();
+      this.frontFacingQuaternion = new THREE.Quaternion();
       this.wrapperWorldPosition = new THREE.Vector3();
       this.cameraWorldPosition = new THREE.Vector3();
       this.lookAtMatrix = new THREE.Matrix4();
       this.up = new THREE.Vector3(0, 1, 0);
       this.camera = null;
+      this.frontFacingQuaternion.setFromEuler(
+        new THREE.Euler(0, Math.PI, 0)
+      );
     },
 
     tick() {
@@ -69,6 +73,7 @@
         this.up
       );
       this.desiredWorldQuaternion.setFromRotationMatrix(this.lookAtMatrix);
+      this.desiredWorldQuaternion.multiply(this.frontFacingQuaternion);
 
       this.el.object3D.quaternion.copy(this.inverseParentQuaternion);
       this.el.object3D.quaternion.multiply(this.desiredWorldQuaternion);
