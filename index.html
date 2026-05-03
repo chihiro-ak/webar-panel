@@ -25,14 +25,32 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background: #05070a;
+      background: transparent;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", sans-serif;
       touch-action: manipulation;
+    }
+
+    body > video,
+    video {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      background: transparent !important;
+      z-index: 0 !important;
     }
 
     a-scene {
       position: fixed;
       inset: 0;
+      background: transparent !important;
+      z-index: 1;
+    }
+
+    a-scene canvas,
+    .a-canvas {
+      background: transparent !important;
     }
 
     .photo-controls {
@@ -216,7 +234,7 @@
   color-space="sRGB"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
-  renderer="colorManagement: true; physicallyCorrectLights: true; preserveDrawingBuffer: true"
+  renderer="alpha: true; colorManagement: true; physicallyCorrectLights: true; preserveDrawingBuffer: true"
 >
   <a-entity light="type: ambient; intensity: 1"></a-entity>
 
@@ -314,6 +332,16 @@
 
   const characterBillboard = document.getElementById("character-billboard");
   const characterPlane = document.getElementById("character-plane");
+  const sceneEl = document.querySelector("a-scene");
+
+  keepCameraFeedVisible();
+  sceneEl?.addEventListener("loaded", ensureTransparentRenderer);
+  sceneEl?.addEventListener("renderstart", ensureTransparentRenderer);
+  sceneEl?.addEventListener("arReady", keepCameraFeedVisible);
+  new MutationObserver(keepCameraFeedVisibleOnce).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 
   loadImageSize(CHARACTER_IMAGE_SRC)
     .then(({ width, height }) => {
@@ -386,6 +414,48 @@
       image.addEventListener("error", reject);
       image.src = src;
     });
+  }
+
+  function ensureTransparentRenderer() {
+    const scene = document.querySelector("a-scene");
+
+    if (!scene?.renderer) {
+      return;
+    }
+
+    scene.renderer.setClearColor(0x000000, 0);
+    scene.renderer.setClearAlpha(0);
+  }
+
+  function keepCameraFeedVisible() {
+    ensureTransparentRenderer();
+
+    for (const video of document.querySelectorAll("video")) {
+      video.style.position = "fixed";
+      video.style.inset = "0";
+      video.style.width = "100vw";
+      video.style.height = "100vh";
+      video.style.objectFit = "cover";
+      video.style.background = "transparent";
+      video.style.zIndex = "0";
+    }
+
+    window.setTimeout(keepCameraFeedVisibleOnce, 300);
+    window.setTimeout(keepCameraFeedVisibleOnce, 1000);
+  }
+
+  function keepCameraFeedVisibleOnce() {
+    ensureTransparentRenderer();
+
+    for (const video of document.querySelectorAll("video")) {
+      video.style.position = "fixed";
+      video.style.inset = "0";
+      video.style.width = "100vw";
+      video.style.height = "100vh";
+      video.style.objectFit = "cover";
+      video.style.background = "transparent";
+      video.style.zIndex = "0";
+    }
   }
 
   setupPhotoCapture();
