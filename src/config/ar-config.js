@@ -8,7 +8,7 @@ export const AR_CONFIG = {
       "./public/assets/char/processed/Todoroki-Hajime_pr-img_02.trimmed.png"
   },
   character: {
-    visibleHeightMeters: 1.55,
+    visibleHeightMeters: 2.232,
     offset: {
       x: 0.42,
       y: 0.02,

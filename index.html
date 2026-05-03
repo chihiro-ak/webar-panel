@@ -26,6 +26,7 @@
         width="1"
         height="1"
         position="0 0 0"
+        visible="false"
         material="shader: flat; transparent: true; side: double; alphaTest: 0.01"
       ></a-plane>
     </a-entity>
@@ -86,67 +87,89 @@
   const TARGET_PHYSICAL_HEIGHT_M = 0.297;
   const DESK_HEIGHT_M = 1.0;
 
+  const CHARACTER_IMAGE_SRC = "character.png";
   const CHARACTER_VISIBLE_HEIGHT_M = 1.87;
-  const CHARACTER_IMAGE_WIDTH_PX = 402;
-  const CHARACTER_IMAGE_HEIGHT_PX = 1030;
   const CHARACTER_RIGHT_GAP_M = 0.0;
   const CHARACTER_VERTICAL_OFFSET_M = 0.08;
   const CHARACTER_FORWARD_M = 0.12;
   const IDLE_FLOAT_M = 0.01;
   const IDLE_SWAY_DEG = 1.2;
 
-  const targetPhysicalWidthM =
-    TARGET_PHYSICAL_HEIGHT_M * (TARGET_IMAGE_WIDTH_PX / TARGET_IMAGE_HEIGHT_PX);
-  const anchorUnitsPerMeter = 1 / targetPhysicalWidthM;
-
-  const characterPhysicalWidthM =
-    CHARACTER_VISIBLE_HEIGHT_M * (CHARACTER_IMAGE_WIDTH_PX / CHARACTER_IMAGE_HEIGHT_PX);
-
-  const characterWidthUnits = characterPhysicalWidthM * anchorUnitsPerMeter;
-  const characterHeightUnits = CHARACTER_VISIBLE_HEIGHT_M * anchorUnitsPerMeter;
-
-  const targetCenterFromFloorM = DESK_HEIGHT_M + TARGET_PHYSICAL_HEIGHT_M / 2;
-  const characterCenterFromFloorM =
-    (CHARACTER_VISIBLE_HEIGHT_M / 2) + CHARACTER_VERTICAL_OFFSET_M;
-
-  const positionXUnits = CHARACTER_RIGHT_GAP_M * anchorUnitsPerMeter;
-  const positionYUnits =
-    (characterCenterFromFloorM - targetCenterFromFloorM) * anchorUnitsPerMeter;
-  const positionZUnits = CHARACTER_FORWARD_M * anchorUnitsPerMeter;
-
   const characterBillboard = document.getElementById("character-billboard");
   const characterPlane = document.getElementById("character-plane");
 
-  characterBillboard.setAttribute(
-    "position",
-    `${positionXUnits.toFixed(3)} ${positionYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
-  );
-  characterBillboard.setAttribute("camera-facing", "");
+  loadImageSize(CHARACTER_IMAGE_SRC)
+    .then(({ width, height }) => {
+      const targetPhysicalWidthM =
+        TARGET_PHYSICAL_HEIGHT_M * (TARGET_IMAGE_WIDTH_PX / TARGET_IMAGE_HEIGHT_PX);
+      const anchorUnitsPerMeter = 1 / targetPhysicalWidthM;
+      const characterAspectRatio = width / height;
+      const characterPhysicalWidthM =
+        CHARACTER_VISIBLE_HEIGHT_M * characterAspectRatio;
 
-  characterPlane.setAttribute("width", characterWidthUnits.toFixed(3));
-  characterPlane.setAttribute("height", characterHeightUnits.toFixed(3));
-  characterPlane.setAttribute(
-    "animation__float",
-    [
-      "property: position",
-      "dir: alternate",
-      "dur: 2200",
-      "easing: easeInOutSine",
-      "loop: true",
-      `to: 0 ${(IDLE_FLOAT_M * anchorUnitsPerMeter).toFixed(3)} 0`
-    ].join("; ")
-  );
-  characterPlane.setAttribute(
-    "animation__sway",
-    [
-      "property: rotation",
-      "dir: alternate",
-      "dur: 3200",
-      "easing: easeInOutSine",
-      "loop: true",
-      `to: 0 0 ${IDLE_SWAY_DEG}`
-    ].join("; ")
-  );
+      const characterWidthUnits = characterPhysicalWidthM * anchorUnitsPerMeter;
+      const characterHeightUnits = CHARACTER_VISIBLE_HEIGHT_M * anchorUnitsPerMeter;
+
+      const targetCenterFromFloorM = DESK_HEIGHT_M + TARGET_PHYSICAL_HEIGHT_M / 2;
+      const characterCenterFromFloorM =
+        (CHARACTER_VISIBLE_HEIGHT_M / 2) + CHARACTER_VERTICAL_OFFSET_M;
+
+      const positionXUnits = CHARACTER_RIGHT_GAP_M * anchorUnitsPerMeter;
+      const positionYUnits =
+        (characterCenterFromFloorM - targetCenterFromFloorM) * anchorUnitsPerMeter;
+      const positionZUnits = CHARACTER_FORWARD_M * anchorUnitsPerMeter;
+
+      characterBillboard.setAttribute(
+        "position",
+        `${positionXUnits.toFixed(3)} ${positionYUnits.toFixed(3)} ${positionZUnits.toFixed(3)}`
+      );
+      characterBillboard.setAttribute("camera-facing", "");
+
+      characterPlane.setAttribute("src", CHARACTER_IMAGE_SRC);
+      characterPlane.setAttribute("width", characterWidthUnits.toFixed(3));
+      characterPlane.setAttribute("height", characterHeightUnits.toFixed(3));
+      characterPlane.setAttribute("visible", "true");
+      characterPlane.setAttribute(
+        "animation__float",
+        [
+          "property: position",
+          "dir: alternate",
+          "dur: 2200",
+          "easing: easeInOutSine",
+          "loop: true",
+          `to: 0 ${(IDLE_FLOAT_M * anchorUnitsPerMeter).toFixed(3)} 0`
+        ].join("; ")
+      );
+      characterPlane.setAttribute(
+        "animation__sway",
+        [
+          "property: rotation",
+          "dir: alternate",
+          "dur: 3200",
+          "easing: easeInOutSine",
+          "loop: true",
+          `to: 0 0 ${IDLE_SWAY_DEG}`
+        ].join("; ")
+      );
+    })
+    .catch((error) => {
+      console.error("Failed to load character image size.", error);
+    });
+
+  function loadImageSize(src) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.addEventListener("load", () => {
+        resolve({
+          width: image.naturalWidth,
+          height: image.naturalHeight
+        });
+      });
+      image.addEventListener("error", reject);
+      image.src = src;
+    });
+  }
 </script>
 
 </body>
