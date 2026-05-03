@@ -53,13 +53,11 @@
       padding: 0;
       border: 2px solid rgba(255, 255, 255, 0.88);
       border-radius: 50%;
-      background:
-        radial-gradient(circle at 50% 50%, #ffffff 0 33%, transparent 34%),
-        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.18) 0 55%, transparent 56%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+      background: #ffffff;
       box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.38),
-        inset 0 0 0 6px rgba(5, 7, 10, 0.72);
+        inset 0 0 0 5px rgba(255, 255, 255, 0.72),
+        inset 0 0 0 9px rgba(5, 7, 10, 0.16);
       cursor: pointer;
       pointer-events: auto;
       -webkit-tap-highlight-color: transparent;
@@ -76,6 +74,7 @@
       border-radius: 9px;
       background: rgba(255, 255, 255, 0.9);
       opacity: 0.95;
+      display: none;
     }
 
     .capture-button::after {
@@ -88,6 +87,7 @@
       border: 3px solid #0a0d13;
       border-radius: 50%;
       background: transparent;
+      display: none;
     }
 
     .capture-button:active {
@@ -213,9 +213,10 @@
 
 <a-scene
   mindar-image="imageTargetSrc: targets.mind; smoothing: true; filterMinCF:0.0001; filterBeta: 0.001"
+  color-space="sRGB"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
-  renderer="alpha: true; preserveDrawingBuffer: true"
+  renderer="colorManagement: true; physicallyCorrectLights: true; preserveDrawingBuffer: true"
 >
   <a-entity light="type: ambient; intensity: 1"></a-entity>
 
